@@ -1,5 +1,10 @@
 # RISC-V Hardware Assistant
 
+<div align="center">
+  <img width="776" height="616" alt="RISCV-RAG" src="https://github.com/user-attachments/assets/bde7923d-0a93-445c-8879-1cc4d8398027" />
+</div>
+
+
 A robust, offline-capable Retrieval-Augmented Generation (RAG) assistant tailored for RISC-V hardware development. Uses the official RISC-V standard manuals (Unprivileged ISA Specification) to answer technical queries accurately, backing up every statement with its exact source.
 
 ## ✨ Features
