@@ -1,6 +1,6 @@
 # RISC-V Hardware Assistant
 
-A robust, offline-capable Retrieval-Augmented Generation (RAG) assistant tailored for RISC-V hardware development. It uses the official RISC-V standard manuals (Unprivileged ISA Specification) to answer technical queries accurately, backing up every statement with its exact source.
+A robust, offline-capable Retrieval-Augmented Generation (RAG) assistant tailored for RISC-V hardware development. Uses the official RISC-V standard manuals (Unprivileged ISA Specification) to answer technical queries accurately, backing up every statement with its exact source.
 
 ## ✨ Features
 
