@@ -1,3 +1,6 @@
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+
 const form = document.getElementById('chat-form');
 const input = document.getElementById('user-input');
 const chatHistory = document.getElementById('chat-history');
@@ -102,8 +105,8 @@ form.addEventListener('submit', async (e) => {
     // Remove loader
     loader.remove();
     
-    // Use marked library to parse Markdown output
-    const htmlContent = marked.parse(data.answer);
+    // Render model Markdown defensively before injecting it into the DOM.
+    const htmlContent = DOMPurify.sanitize(marked.parse(data.answer));
     
     // Add system response
     addMessage(htmlContent, 'system', true, data.sources);

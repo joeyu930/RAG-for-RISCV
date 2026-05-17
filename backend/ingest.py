@@ -1,23 +1,24 @@
-import os
+from pathlib import Path
 import requests
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 
-DOCS_DIR = "docs"
-DB_DIR = "chroma_db"
+BASE_DIR = Path(__file__).resolve().parent
+DOCS_DIR = BASE_DIR / "docs"
+DB_DIR = BASE_DIR / "chroma_db"
 REPO_API_URL = "https://api.github.com/repos/riscv/riscv-isa-manual/releases/latest"
 PDF_NAME = "riscv-spec.pdf"
-FILE_PATH = os.path.join(DOCS_DIR, PDF_NAME)
+FILE_PATH = DOCS_DIR / PDF_NAME
+REQUEST_TIMEOUT_SECONDS = 30
 
 def download_latest_spec():
-    if not os.path.exists(DOCS_DIR):
-        os.makedirs(DOCS_DIR)
+    DOCS_DIR.mkdir(parents=True, exist_ok=True)
         
     print(f"Fetching latest release info from {REPO_API_URL}...")
     try:
-        response = requests.get(REPO_API_URL)
+        response = requests.get(REPO_API_URL, timeout=REQUEST_TIMEOUT_SECONDS)
         response.raise_for_status()
         data = response.json()
         
@@ -32,10 +33,10 @@ def download_latest_spec():
             return False
             
         print(f"Downloading {PDF_NAME} from {download_url}...")
-        pdf_resp = requests.get(download_url)
+        pdf_resp = requests.get(download_url, timeout=REQUEST_TIMEOUT_SECONDS)
         pdf_resp.raise_for_status()
         
-        with open(FILE_PATH, "wb") as f:
+        with FILE_PATH.open("wb") as f:
             f.write(pdf_resp.content)
             
         print(f"Successfully downloaded to {FILE_PATH}")
@@ -45,14 +46,14 @@ def download_latest_spec():
         return False
 
 def ingest_documents():
-    if not os.path.exists(FILE_PATH):
+    if not FILE_PATH.exists():
         success = download_latest_spec()
         if not success:
             print("Failed to procure the document. Aborting ingestion.")
             return
 
     print("Loading document...")
-    loader = PyPDFLoader(FILE_PATH)
+    loader = PyPDFLoader(str(FILE_PATH))
     documents = loader.load()
     print(f"Loaded {len(documents)} pages.")
 
@@ -74,7 +75,7 @@ def ingest_documents():
     vectorstore = Chroma.from_documents(
         documents=chunks,
         embedding=embedding_model,
-        persist_directory=DB_DIR
+        persist_directory=str(DB_DIR)
     )
     print("Ingestion complete and database persisted!")
 

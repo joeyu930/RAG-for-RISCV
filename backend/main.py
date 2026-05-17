@@ -1,6 +1,6 @@
-import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pathlib import Path
 from pydantic import BaseModel
 from langchain_community.vectorstores import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -13,7 +13,7 @@ app = FastAPI(title="RISC-V Assistant API")
 # Allow CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -25,7 +25,8 @@ retriever = None
 llm = None
 rag_chain = None
 
-DB_DIR = "chroma_db"
+BASE_DIR = Path(__file__).resolve().parent
+DB_DIR = BASE_DIR / "chroma_db"
 
 @app.on_event("startup")
 async def startup_event():
@@ -34,9 +35,9 @@ async def startup_event():
     # Matches the model used in ingest.py
     embedding_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     
-    if os.path.exists(DB_DIR):
+    if DB_DIR.exists():
         print("Connecting to local Chroma DB...")
-        vectorstore = Chroma(persist_directory=DB_DIR, embedding_function=embedding_model)
+        vectorstore = Chroma(persist_directory=str(DB_DIR), embedding_function=embedding_model)
         retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
     else:
         print("WARNING: Chroma DB not found. Please run ingest.py first.")
