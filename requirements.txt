@@ -1,0 +1,21 @@
+# backend
+fastapi
+uvicorn
+
+# AI application framework
+langchain
+langchain-community
+langchain-huggingface
+
+# vector database
+chromadb
+
+# deep learning framework
+sentence-transformers
+transformers
+accelerate
+
+# others
+lazy_loader
+pypdf
+requests
